@@ -2,6 +2,8 @@ import sys
 import os
 import shutil
 import imageio
+import numpy as np
+import skimage
 from biaflows import CLASS_SPTCNT
 from biaflows.helpers import BiaflowsJob, prepare_data, get_discipline
 # code for workflow:
@@ -34,6 +36,15 @@ def main(argv):
             # Read Nuclei labels
             fn = os.path.join(in_path, bfimg.filename)
             imCellsNucleiLabels = imageio.imread(fn)
+            # Flatten (x,y,c) to (x,y) if needed
+            if imCellsNucleiLabels.ndim == 3:
+                # we will assume x,y,c and not c,x,y.
+                # imCellsNucleiLabels = imCellsNucleiLabels.sum(axis=2)
+                imCellsNucleiLabels = skimage.color.rgb2gray(imCellsNucleiLabels)
+            
+            if imCellsNucleiLabels.ndim != 2:
+                raise ValueError(f"Input image {bfimg} has too many channels for a Nuclei mask!")
+            
             # Expand Cells
             (imCellsNucleiLabels,
                 imCellsCellLabels,
