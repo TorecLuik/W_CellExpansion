@@ -1,6 +1,6 @@
 {
   "name": "CellExpansion",
-  "description": "2D Cell Expansion for counting granules",
+  "description": "Expands a 2D nuclei label mask outward by up to a configurable number of pixels to generate matching cell and cytoplasm label masks. Input must be a grayscale nuclei label image (uint8, uint16, or uint32). Useful for downstream measurements such as granule counting.",
   "container-image": {
     "image": "torecluik/w_cellexpansion",
     "type": "singularity"
@@ -57,7 +57,7 @@
       "value-key": "@ID",
       "command-line-flag": "--@id",
       "name": "Max pixels",
-      "description": "Max pixels to expand the cell with",
+      "description": "Maximum number of pixels to expand outward from each nucleus boundary. Larger values cover more cytoplasm but may cause neighbouring cells to overlap.",
       "default-value": 25,
       "set-by-server": false,
       "optional": true,
@@ -68,7 +68,7 @@
       "value-key": "@ID",
       "command-line-flag": "--@id",
       "name": "Discard cells without Cytoplasm?",
-	    "description": "If true, we will discard cells without cytoplasm",
+      "description": "If true, nuclei that have no free background pixels within the expansion distance (e.g. tightly packed cells) are removed from the output so that nuclei and cytoplasm labels always match.",
       "default-value": true,
       "set-by-server": false,
       "optional": true,
