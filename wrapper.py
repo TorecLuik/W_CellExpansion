@@ -38,9 +38,15 @@ def main(argv):
             imCellsNucleiLabels = imageio.imread(fn)
             # Flatten (x,y,c) to (x,y) if needed
             if imCellsNucleiLabels.ndim == 3:
-                # we will assume x,y,c and not c,x,y.
-                # imCellsNucleiLabels = imCellsNucleiLabels.sum(axis=2)
-                imCellsNucleiLabels = skimage.color.rgb2gray(imCellsNucleiLabels)
+                if imCellsNucleiLabels.shape[2] == 4 and imCellsNucleiLabels.dtype == np.uint8:
+                    # uint32 label mask read as 4-channel RGBA by imageio - reconstruct label values
+                    imCellsNucleiLabels = np.ascontiguousarray(imCellsNucleiLabels).view(np.uint32).reshape(imCellsNucleiLabels.shape[:2])
+                else:
+                    # we will assume x,y,c and not c,x,y.
+                    imCellsNucleiLabels = skimage.color.rgb2gray(imCellsNucleiLabels)
+            # If imageio converted uint32 to float64, restore integer labels
+            if imCellsNucleiLabels.dtype == np.float64:
+                imCellsNucleiLabels = imCellsNucleiLabels.astype(np.uint32)
             
             if imCellsNucleiLabels.ndim != 2:
                 raise ValueError(f"Input image {bfimg} has too many channels for a Nuclei mask!")

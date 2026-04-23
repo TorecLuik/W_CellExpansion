@@ -30,8 +30,9 @@ def CellExpansion(imCellsNucleiLabels,maxpixels,discardcellswithoutcytoplasm):
     from ismember import ismember
 
     # Distance transform (distance of all black pixel to nearest non black pixel
-    ret,imCellsNucleiLabelsBI=cv2.threshold(imCellsNucleiLabels,0,1,cv2.THRESH_BINARY_INV)
-    NucleiDist = cv2.distanceTransform(imCellsNucleiLabelsBI.astype(np.uint8), cv2.DIST_L2, cv2.DIST_MASK_PRECISE)
+    # Use numpy instead of cv2.threshold to support any integer dtype (uint8, uint16, uint32, etc.)
+    imCellsNucleiLabelsBI = (imCellsNucleiLabels == 0).astype(np.uint8)
+    NucleiDist = cv2.distanceTransform(imCellsNucleiLabelsBI, cv2.DIST_L2, cv2.DIST_MASK_PRECISE)
 
     # Restrict to maxpixels distance
     NucleiDist[NucleiDist>maxpixels]=0
